@@ -8,7 +8,6 @@ def load_data(file):
     f = open(file, "r")
     lines = f.readlines()
     for line in lines:
-        # print line
         dataLine = []
         dataStr = line.split()
         class_val.append(float(dataStr[0]))
@@ -20,21 +19,31 @@ def load_data(file):
 
 def nnAlg(trainX, trainY, featuresIdxs):
     predY = []
+    trainXTemp = trainX[:, featuresIdxs]
     for k in range(0, len(trainX)):
         sampleX = np.array([trainX[k]])
-        trainXTemp = trainX[:, featuresIdxs]
         sampleXTemp = sampleX[:, featuresIdxs]
+        # for j in range()
         eucDises = np.sqrt(np.sum(np.square(trainXTemp - sampleXTemp), axis=1))
         # dict = {}
         # for i in range(0, len(eucDises)):
         #     dict[eucDises[i]] = i
+        # minDis = 10000000000000
+        # idx = -1
+        # for i in range(0, len(eucDises)):
+        #     if(eucDises[i] == 0):
+        #         continue
+        #     if(minDis > eucDises[i]):
+        #         minDis = eucDises[i]
+        #         idx = i
         sortedEucDises= np.sort(eucDises, kind='quicksort', order=None)
+        idx = -1
         for i in range(0, len(eucDises)):
             if(sortedEucDises[1] == eucDises[i]): #Find the index of the nearest neighbor of the sample point
+                idx = i
                 break
-        idx = i #dict[sortedEucDises[1]]
+        # idx = dict[sortedEucDises[1]]
         predY.append(trainY[idx])
-    # print(predY)
     return predY
 
 def errorRate(Y,predy):
@@ -118,10 +127,12 @@ if __name__ == '__main__':
         print("Please input a correct value.")
         exit(-1)
     (test_class_data, test_features_data) = load_data(file)
+    start = time.time()
     bestFeatureList = selection(test_features_data, test_class_data, direction)
-
+    end = time.time()
+    print("time:" + str(end - start))
     # (large_test_class_data, large_test_features_data) = load_data("CS205_SP_2022_Largetestdata__60.txt")
     # bestFeatureList = selection(large_test_features_data, large_test_class_data, 0)
-    print("bestFeatureList:" + str(bestFeatureList))
+    # print("bestFeatureList:" + str(bestFeatureList))
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
