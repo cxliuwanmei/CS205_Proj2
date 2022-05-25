@@ -30,7 +30,7 @@ def nnAlg(trainX, trainY, featuresIdxs):
         #     dict[eucDises[i]] = i
         sortedEucDises= np.sort(eucDises, kind='quicksort', order=None)
         for i in range(0, len(eucDises)):
-            if(sortedEucDises[1] == eucDises[i]):
+            if(sortedEucDises[1] == eucDises[i]): #Find the index of the nearest neighbor of the sample point
                 break
         idx = i #dict[sortedEucDises[1]]
         predY.append(trainY[idx])
@@ -52,7 +52,7 @@ def selection(trainX, trainY, dirction):
     bestLowerLvlFeatureList = []
     bestFeatureList = []
     (m,n) = trainX.shape
-    if(dirction == 0):
+    if(dirction == 1):
         for j in range(0, n):
             lvlErrRate = 1
             for i in range(0, n):
@@ -60,13 +60,16 @@ def selection(trainX, trainY, dirction):
                     continue;
                 tempFeatureList = bestUpperLvlFeatureList[:]
                 tempFeatureList.append(i)
-                predY = nnAlg(trainX, trainY, tempFeatureList)
-                errRate = errorRate(trainY, predY)
+                errRate = errorRate(trainY, nnAlg(trainX, trainY, tempFeatureList))
+                print("    Using feature(s) " + str(tempFeatureList) + " accuracy is " + str((1 - errRate) * 100) + "%")
                 if(errRate < lvlErrRate):
                     lvlErrRate = errRate
                     bestLvlFeatureList = tempFeatureList
+            print("Best feature set is " + str(bestLvlFeatureList) + " accuracy is " + str((1 - lvlErrRate) * 100) + "%")
             bestUpperLvlFeatureList = bestLvlFeatureList
-            bestFeatureList.append([lvlErrRate, bestLvlFeatureList])
+            bestFeatureList.append([lvlErrRate, np.sort(bestLvlFeatureList, kind='quicksort', order=None)])
+            # print("Forward level " + str(j) + " lvlErrRate: " + str(lvlErrRate))
+            # print("Forward level " + str(j) + " bestLvlFeatureList: " + str(bestLvlFeatureList))
     else:
         for i in range(0, n):
             bestLowerLvlFeatureList.append(i)
@@ -77,23 +80,48 @@ def selection(trainX, trainY, dirction):
             for i in range(0, (n - j)):
                 tempFeatureList = bestLowerLvlFeatureList[:]
                 del tempFeatureList[i]
-                predY = nnAlg(trainX, trainY, tempFeatureList)
-                errRate = errorRate(trainY, predY)
+                errRate = errorRate(trainY, nnAlg(trainX, trainY, tempFeatureList))
+                print("    Using feature(s) " + str(tempFeatureList) + " accuracy is " + str((1 - errRate) * 100) + "%")
                 if (errRate < lvlErrRate):
                     lvlErrRate = errRate
                     bestLvlFeatureList = tempFeatureList
+            print("Best feature set is " + str(bestLvlFeatureList) + " accuracy is " + str((1 - lvlErrRate) * 100) + "%")
             bestLowerLvlFeatureList = bestLvlFeatureList
             bestFeatureList.append([lvlErrRate, bestLvlFeatureList])
+    errRate = 1
+    idx = -1
+    for i in range(0, len(bestFeatureList)):
+        tempFeatureList = bestFeatureList[i]
+        if(errRate > tempFeatureList[0]):
+            errRate = tempFeatureList[0]
+            idx = i
+    print("Finish searchinng. The best featrue set is " + str(bestFeatureList[idx][1]) + " accuracy is " + str((1 - bestFeatureList[idx][0]) * 100) + "%")
     return bestFeatureList
 
 if __name__ == '__main__':
-    # XTest = np.array([[2.0, -1.0], [2.0, -1.0]])
-    # eucDis(XTest, np.array([XTest[0]]), [0, 1])
-    (small_test_class_data, small_test_features_data) = load_data("CS205_SP_2022_SMALLtestdata__78.txt")
-    selection(small_test_features_data, small_test_class_data, 0)
-    # featuresIdxs = [0, 2]
-    # predY = nnAlg(small_test_features_data, small_test_class_data, featuresIdxs)
-    # errRate = errorrate(small_test_class_data, predY)
-    print("errRate:" + str(errRate))
+    print("Please select a test file:")
+    print("1. CS205_SP_2022_Largetestdata__60.txt")
+    print("2. CS205_SP_2022_SMALLtestdata__78.txt")
+    test_file = input("Input 1 or 2:")
+    if(test_file == 1):
+        file = "CS205_SP_2022_Largetestdata__60.txt"
+    elif(test_file == 2):
+        file = "CS205_SP_2022_SMALLtestdata__78.txt"
+    else:
+        print("Please input a correct value.")
+        exit(-1)
+    print("Please select a test algorithm:")
+    print("1->Forward Selection")
+    print("2->Backward Elimination")
+    direction = input("Input 1 or 2:")
+    if(direction != 1 and direction != 2):
+        print("Please input a correct value.")
+        exit(-1)
+    (test_class_data, test_features_data) = load_data(file)
+    bestFeatureList = selection(test_features_data, test_class_data, direction)
+
+    # (large_test_class_data, large_test_features_data) = load_data("CS205_SP_2022_Largetestdata__60.txt")
+    # bestFeatureList = selection(large_test_features_data, large_test_class_data, 0)
+    print("bestFeatureList:" + str(bestFeatureList))
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
