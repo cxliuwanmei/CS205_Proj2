@@ -23,7 +23,6 @@ def nnAlg(trainX, trainY, featuresIdxs):
     for k in range(0, len(trainX)):
         sampleX = np.array([trainX[k]])
         sampleXTemp = sampleX[:, featuresIdxs]
-        # for j in range()
         eucDises = np.sqrt(np.sum(np.square(trainXTemp - sampleXTemp), axis=1))
         # dict = {}
         # for i in range(0, len(eucDises)):
@@ -36,14 +35,16 @@ def nnAlg(trainX, trainY, featuresIdxs):
         #     if(minDis > eucDises[i]):
         #         minDis = eucDises[i]
         #         idx = i
-        sortedEucDises= np.sort(eucDises, kind='quicksort', order=None)
-        idx = -1
-        for i in range(0, len(eucDises)):
-            if(sortedEucDises[1] == eucDises[i]): #Find the index of the nearest neighbor of the sample point
-                idx = i
-                break
-        # idx = dict[sortedEucDises[1]]
-        predY.append(trainY[idx])
+        sortedEucDises = np.argsort(eucDises)
+        predY.append(trainY[sortedEucDises[1]])
+        # sortedEucDises= np.sort(eucDises, kind='quicksort', order=None)
+        # idx = -1
+        # for i in range(0, len(eucDises)):
+        #     if(sortedEucDises[1] == eucDises[i]): #Find the index of the nearest neighbor of the sample point
+        #         idx = i
+        #         break
+        # # idx = dict[sortedEucDises[1]]
+        # predY.append(trainY[idx])
     return predY
 
 def errorRate(Y,predy):
@@ -74,7 +75,7 @@ def selection(trainX, trainY, dirction):
                 if(errRate < lvlErrRate):
                     lvlErrRate = errRate
                     bestLvlFeatureList = tempFeatureList
-            print("Best feature set is " + str(bestLvlFeatureList) + " accuracy is " + str((1 - lvlErrRate) * 100) + "%")
+            print("Best feature set is " + str(np.sort(bestLvlFeatureList, kind='quicksort', order=None)) + " accuracy is " + str((1 - lvlErrRate) * 100) + "%")
             bestUpperLvlFeatureList = bestLvlFeatureList
             bestFeatureList.append([lvlErrRate, np.sort(bestLvlFeatureList, kind='quicksort', order=None)])
             # print("Forward level " + str(j) + " lvlErrRate: " + str(lvlErrRate))
