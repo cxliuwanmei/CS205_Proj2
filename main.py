@@ -107,15 +107,15 @@ def plotChart(bestFeatureList, large, direction):
 
     if (direction == 1):
         if (large):
-            title = "Figure 1: Large dataset with "
+            title = "Figure 3: Large dataset with "
         else:
-            title = "Figure 3: Small dataset with "
+            title = "Figure 1: Small dataset with "
         title += "Forward Selection"
     else:
         if (large):
-            title = "Figure 2: Large dataset with "
+            title = "Figure 4: Large dataset with "
         else:
-            title = "Figure 4: Small dataset with "
+            title = "Figure 2: Small dataset with "
         title += "Backward Elimination"
 
     for i in range(0, len(bestFeatureList)):
@@ -174,5 +174,3 @@ if __name__ == '__main__':
     end = time.time()
     print("time:" + str(end - start))
     plotChart(bestFeatureList, large, direction)
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
